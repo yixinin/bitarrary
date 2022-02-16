@@ -37,7 +37,7 @@ func TestNot(t *testing.T) {
 	}
 }
 
-func TestMoveLeft(t *testing.T) {
+func TestLeftShift(t *testing.T) {
 	n := 1
 	a := uint64(0b101)
 	b := FromNumber(a)
@@ -47,7 +47,7 @@ func TestMoveLeft(t *testing.T) {
 	}
 }
 
-func TestMoveRight(t *testing.T) {
+func TestRightShift(t *testing.T) {
 	n := 1
 	a := uint64(0b101)
 	b := FromNumber(a)
