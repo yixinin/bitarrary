@@ -38,18 +38,14 @@ func (b *BitArrary) ToNumber() uint64 {
 	return 0
 }
 
-func (b *BitArrary) ToArrary() []uint8 {
-	var bits = make([]byte, 0, b.bitSize)
+func (b *BitArrary) ToArrary() []bool {
+	var bits = make([]bool, 0, b.byteSize*8)
 	for i := 0; i < b.byteSize; i++ {
 		for j := 7; j >= 0; j-- {
-			if b.bytes[i]&(uint8(1)<<j) > 0 {
-				bits = append(bits, 1)
-			} else {
-				bits = append(bits, 0)
-			}
+			bits = append(bits, b.bytes[i]&(uint8(1)<<j) > 0)
 		}
 	}
-	return bits
+	return bits[b.byteSize*8-b.bitSize:]
 }
 
 func FromNumber(i interface{}) *BitArrary {
@@ -98,7 +94,7 @@ func FromNumber(i interface{}) *BitArrary {
 	panic("not surport this number")
 }
 
-func (b *BitArrary) Reset(positive bool) {
+func (b *BitArrary) Reset(positive bool) *BitArrary {
 	for i := range b.bytes {
 		if positive {
 			b.bytes[i] = 255
@@ -106,7 +102,7 @@ func (b *BitArrary) Reset(positive bool) {
 			b.bytes[i] = 0
 		}
 	}
-	b.Cut()
+	return b.Cut()
 }
 
 func (b *BitArrary) Cut() *BitArrary {
@@ -124,10 +120,10 @@ func (b *BitArrary) Inc(i int) *BitArrary {
 	default:
 		if i < 0 {
 			x := sub(b.bytes, FromNumber(-i).bytes)
-			copy(b.bytes, x[:len(b.bytes)])
+			copy(b.bytes, x[len(x)-b.byteSize:])
 		} else {
 			x := add(b.bytes, FromNumber(i).bytes)
-			copy(b.bytes, x[:len(b.bytes)])
+			copy(b.bytes, x[len(x)-b.byteSize:])
 		}
 	}
 	return b.Cut()
@@ -156,10 +152,10 @@ func add(a, b []byte) []byte {
 		o := va + vb + over
 		if o < va {
 			over = 1
-			ret[i] = 0
 		} else {
-			ret[i] = o
+			over = 0
 		}
+		ret[i] = o
 		ai--
 		bi--
 	}
@@ -189,10 +185,10 @@ func sub(a, b []byte) []byte {
 		o := va - take - vb
 		if o > va {
 			take = 1
-			ret[i] = o
 		} else {
-			ret[i] = o
+			take = 0
 		}
+		ret[i] = o
 		ai--
 		bi--
 	}
@@ -398,6 +394,9 @@ func Not(b *BitArrary) *BitArrary {
 	return ret.Cut()
 }
 
+// return -1 if a<b
+// return 1 if a>b
+// return 0 if a==b
 func Compare(a, b *BitArrary) int {
 	var size = a.byteSize
 	lb := b.byteSize
@@ -415,9 +414,9 @@ func Compare(a, b *BitArrary) int {
 			vb = b.bytes[bi]
 		}
 		if vb > va {
-			return 1
-		} else if vb < va {
 			return -1
+		} else if vb < va {
+			return 1
 		}
 		ai--
 		bi--
