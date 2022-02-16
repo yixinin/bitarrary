@@ -91,7 +91,7 @@ func FromNumber(i interface{}) *BitArrary {
 		binary.BigEndian.PutUint64(bits.bytes, uint64(v))
 		return bits
 	}
-	panic("not surport this number")
+	panic("not a valid number")
 }
 
 func (b *BitArrary) Reset(positive bool) *BitArrary {
@@ -236,19 +236,19 @@ func (b *BitArrary) Not() *BitArrary {
 	return Not(b)
 }
 
-func (b *BitArrary) MoveLeft(n int) {
+func (b *BitArrary) LShift(n int) {
 	if n == 0 {
 		return
 	}
 	if n < 0 {
-		b.MoveRight(-n)
+		b.RShift(-n)
 		return
 	}
-	moveLeft(b.bytes, n)
+	lshift(b.bytes, n)
 	b.Cut()
 }
 
-func moveLeft(b []byte, offset int) {
+func lshift(b []byte, offset int) {
 	size := len(b)
 	bitSize := size * 8
 
@@ -277,19 +277,19 @@ func moveLeft(b []byte, offset int) {
 	}
 }
 
-func (b *BitArrary) MoveRight(n int) {
+func (b *BitArrary) RShift(n int) {
 	if n == 0 {
 		return
 	}
 	if n < 0 {
-		b.MoveLeft(-n)
+		b.LShift(-n)
 		return
 	}
-	moveRight(b.bytes, n)
+	rshift(b.bytes, n)
 	b.Cut()
 }
 
-func moveRight(b []byte, n int) {
+func rshift(b []byte, n int) {
 	size := len(b)
 	bitSize := size * 8
 

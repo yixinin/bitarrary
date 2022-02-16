@@ -41,7 +41,7 @@ func TestMoveLeft(t *testing.T) {
 	n := 1
 	a := uint64(0b101)
 	b := FromNumber(a)
-	b.MoveLeft(n)
+	b.LShift(n)
 	if b.ToNumber() != a<<uint64(n) {
 		t.Error("fail")
 	}
@@ -51,7 +51,7 @@ func TestMoveRight(t *testing.T) {
 	n := 1
 	a := uint64(0b101)
 	b := FromNumber(a)
-	b.MoveRight(n)
+	b.RShift(n)
 	if b.ToNumber() != a>>uint64(n) {
 		t.Error("fail")
 	}
