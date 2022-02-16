@@ -24,6 +24,10 @@ func NewBitArray(size int) *BitArrary {
 	}
 }
 
+func (b *BitArrary) Len() int {
+	return b.bitSize
+}
+
 func (b *BitArrary) ToNumber() uint64 {
 	switch b.byteSize {
 	case 1:
@@ -102,10 +106,10 @@ func (b *BitArrary) Reset(positive bool) *BitArrary {
 			b.bytes[i] = 0
 		}
 	}
-	return b.Cut()
+	return b.cut()
 }
 
-func (b *BitArrary) Cut() *BitArrary {
+func (b *BitArrary) cut() *BitArrary {
 	if b.bitSize < 8*b.byteSize {
 		bitSize := b.bitSize % 8
 		b.bytes[0] = b.bytes[0] & (uint8(255) >> uint8(8-bitSize))
@@ -126,7 +130,7 @@ func (b *BitArrary) Inc(i int) *BitArrary {
 			copy(b.bytes, x[len(x)-b.byteSize:])
 		}
 	}
-	return b.Cut()
+	return b.cut()
 }
 
 func add(a, b []byte) []byte {
@@ -245,7 +249,7 @@ func (b *BitArrary) LShift(n int) {
 		return
 	}
 	lshift(b.bytes, n)
-	b.Cut()
+	b.cut()
 }
 
 func lshift(b []byte, offset int) {
@@ -286,7 +290,7 @@ func (b *BitArrary) RShift(n int) {
 		return
 	}
 	rshift(b.bytes, n)
-	b.Cut()
+	b.cut()
 }
 
 func rshift(b []byte, n int) {
@@ -335,7 +339,7 @@ func And(a, b *BitArrary) *BitArrary {
 		ai--
 		bi--
 	}
-	return ret.Cut()
+	return ret.cut()
 }
 
 func Or(a, b *BitArrary) *BitArrary {
@@ -359,7 +363,7 @@ func Or(a, b *BitArrary) *BitArrary {
 		ai--
 		bi--
 	}
-	return ret.Cut()
+	return ret.cut()
 }
 
 func Xor(a, b *BitArrary) *BitArrary {
@@ -383,7 +387,7 @@ func Xor(a, b *BitArrary) *BitArrary {
 		ai--
 		bi--
 	}
-	return ret.Cut()
+	return ret.cut()
 }
 
 func Not(b *BitArrary) *BitArrary {
@@ -391,7 +395,7 @@ func Not(b *BitArrary) *BitArrary {
 	for i := range b.bytes {
 		ret.bytes[i] = ^b.bytes[i]
 	}
-	return ret.Cut()
+	return ret.cut()
 }
 
 // return -1 if a<b
