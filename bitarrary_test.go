@@ -40,9 +40,9 @@ func TestNot(t *testing.T) {
 func TestLeftShift(t *testing.T) {
 	n := 1
 	a := uint64(0b101)
-	b := FromNumber(a)
+	b := BitSetFromNumber(a)
 	b.LShift(n)
-	if b.ToNumber() != a<<uint64(n) {
+	if b.ToNumber()[0] != a<<uint64(n) {
 		t.Error("fail")
 	}
 }
@@ -91,7 +91,7 @@ func TestGetBit(t *testing.T) {
 }
 
 func TestCut(t *testing.T) {
-	var b = NewBitArray(9)
+	var b = NewBitArrary(9)
 	b.Reset(true)
 	if b.ToNumber() != uint64(0b111111111) {
 		t.Error("fail")

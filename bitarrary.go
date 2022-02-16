@@ -10,7 +10,7 @@ type BitArrary struct {
 	byteSize int
 }
 
-func NewBitArray(size int) *BitArrary {
+func NewBitArrary(size int) *BitArrary {
 	byteSize := size / 8
 	if size%8 > 0 {
 		byteSize++
@@ -55,43 +55,43 @@ func (b *BitArrary) ToArrary() []bool {
 func FromNumber(i interface{}) *BitArrary {
 	switch v := i.(type) {
 	case uint8:
-		bits := NewBitArray(8)
+		bits := NewBitArrary(8)
 		bits.bytes[0] = v
 		return bits
 	case uint16:
-		bits := NewBitArray(16)
+		bits := NewBitArrary(16)
 		binary.BigEndian.PutUint16(bits.bytes, v)
 		return bits
 	case uint32:
-		bits := NewBitArray(32)
+		bits := NewBitArrary(32)
 		binary.BigEndian.PutUint32(bits.bytes, v)
 		return bits
 	case uint64:
-		bits := NewBitArray(64)
+		bits := NewBitArrary(64)
 		binary.BigEndian.PutUint64(bits.bytes, v)
 		return bits
 	case uint:
-		bits := NewBitArray(64)
+		bits := NewBitArrary(64)
 		binary.BigEndian.PutUint64(bits.bytes, uint64(v))
 		return bits
 	case int8:
-		bits := NewBitArray(8)
+		bits := NewBitArrary(8)
 		bits.bytes[0] = uint8(v)
 		return bits
 	case int16:
-		bits := NewBitArray(16)
+		bits := NewBitArrary(16)
 		binary.BigEndian.PutUint16(bits.bytes, uint16(v))
 		return bits
 	case int32:
-		bits := NewBitArray(32)
+		bits := NewBitArrary(32)
 		binary.BigEndian.PutUint32(bits.bytes, uint32(v))
 		return bits
 	case int64:
-		bits := NewBitArray(64)
+		bits := NewBitArrary(64)
 		binary.BigEndian.PutUint64(bits.bytes, uint64(v))
 		return bits
 	case int:
-		bits := NewBitArray(64)
+		bits := NewBitArrary(64)
 		binary.BigEndian.PutUint64(bits.bytes, uint64(v))
 		return bits
 	}
@@ -199,7 +199,7 @@ func sub(a, b []byte) []byte {
 	return ret
 }
 
-func (b *BitArrary) SetBit(index int, positive bool) {
+func (b *BitArrary) SetBit(index int, positive bool) *BitArrary {
 	bidx := index / 8
 	if bidx >= b.byteSize {
 		panic("over flow")
@@ -212,6 +212,7 @@ func (b *BitArrary) SetBit(index int, positive bool) {
 	} else {
 		b.bytes[bidx] = b.bytes[bidx] & ^(uint8(0b1) << byte(bbidx))
 	}
+	return b.cut()
 }
 
 func (b *BitArrary) GetBit(index int) bool {
@@ -252,18 +253,18 @@ func (b *BitArrary) LShift(n int) {
 	b.cut()
 }
 
-func lshift(b []byte, offset int) {
+func lshift(b []byte, n int) {
 	size := len(b)
 	bitSize := size * 8
 
 	var dstByteIdx, dstBitOff int
 	var srcByteIdx, dstBitIdx, srcBitOff int
 
-	for i := offset; i < bitSize; i++ {
+	for i := n; i < bitSize; i++ {
 		srcByteIdx = i / 8
 		srcBitOff = i % 8
 
-		dstBitIdx = i - offset
+		dstBitIdx = i - n
 		dstByteIdx = dstBitIdx / 8
 		dstBitOff = dstBitIdx % 8
 
@@ -331,7 +332,7 @@ func And(a, b *BitArrary) *BitArrary {
 	if lb < size {
 		size = lb
 	}
-	var ret = NewBitArray(size * 8)
+	var ret = NewBitArrary(size * 8)
 	var ai = a.byteSize - 1
 	var bi = b.byteSize - 1
 	for i := size - 1; i >= 0; i-- {
@@ -350,7 +351,7 @@ func Or(a, b *BitArrary) *BitArrary {
 	}
 	var ai = a.byteSize - 1
 	var bi = b.byteSize - 1
-	var ret = NewBitArray(size * 8)
+	var ret = NewBitArrary(size * 8)
 	for i := size - 1; i >= 0; i-- {
 		va, vb := byte(0), byte(0)
 		if ai >= 0 {
@@ -374,7 +375,7 @@ func Xor(a, b *BitArrary) *BitArrary {
 	}
 	var ai = a.byteSize - 1
 	var bi = b.byteSize - 1
-	var ret = NewBitArray(size * 8)
+	var ret = NewBitArrary(size * 8)
 	for i := size - 1; i >= 0; i-- {
 		va, vb := byte(0), byte(0)
 		if ai >= 0 {
@@ -391,7 +392,7 @@ func Xor(a, b *BitArrary) *BitArrary {
 }
 
 func Not(b *BitArrary) *BitArrary {
-	var ret = NewBitArray(b.bitSize)
+	var ret = NewBitArrary(b.bitSize)
 	for i := range b.bytes {
 		ret.bytes[i] = ^b.bytes[i]
 	}
